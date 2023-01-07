@@ -15,6 +15,7 @@ import FormCantidadProducto from './FormCantidadProducto';
     const [cliente, guardarCliente] = useState({});
     const [busqueda, guardarBusqueda] = useState('');
     const [productos, guardarProductos] = useState([]);
+    const [total, guardarTotal] = useState(0);
     
 
     useEffect( () => {
@@ -27,10 +28,16 @@ import FormCantidadProducto from './FormCantidadProducto';
         }
 
         consultarAPI()
-        
-    },[]);
 
-    const buscarProducto = e => {
+        // actualizarTotal()
+        
+    }, []);
+
+    // useEffect(() => {
+    //     actualizarTotal()
+    // }, [productos])
+
+    const buscarProducto = async e => {
         e.preventDefault();
 
         // obtener los productos de la busqueda
@@ -67,6 +74,55 @@ import FormCantidadProducto from './FormCantidadProducto';
         guardarBusqueda(e.target.value)
     }
 
+    const actualizarTotal = () => {
+        if(productos.length === 0){
+            guardarTotal(0)
+            return;
+        }
+
+        // recorrer todos los productos y sus cantidad y precios
+        let nuevoTotal = 0
+        productos.map(producto => nuevoTotal += (producto.cantidad * producto.price))
+
+        guardarTotal(nuevoTotal)
+
+    }
+
+    const restarCantidad = index => {
+        console.log("uno menos ", index)
+        const todosProductos = [...productos]
+
+        // validar si esta en 0 no puede ir mas alla
+        if(todosProductos[index].cantidad === 0) return;
+
+        // decremento
+        todosProductos[index].cantidad --;
+
+        // almacenarlo en el state
+        guardarProductos(todosProductos)
+
+        // guardarTotal( todosProductos[index].cantidad * todosProductos[index].price)
+        actualizarTotal()
+    }
+
+    const aumentarCantidad = index => {
+        console.log("uno mas ", index)
+        const todosProductos = [...productos]
+
+        // validar si esta en 0 no puede ir mas alla
+        // if(todosProductos[index].cantidad === 0) return;
+
+        // aumentar
+        todosProductos[index].cantidad ++;
+
+        // almacenarlo en el state
+        guardarProductos(todosProductos)
+
+        actualizarTotal()
+
+        // guardarTotal( todosProductos[index].cantidad * todosProductos[index].price)
+    }
+
     return (
         <div className="caja-contenido col-9">
             <h2>Nuevo Pedido</h2>
@@ -90,19 +146,34 @@ import FormCantidadProducto from './FormCantidadProducto';
                 <FormBuscarProducto
                     buscarProducto = {buscarProducto}
                     leerDatosBusqueda = {leerDatosBusqueda}
+
                     ></FormBuscarProducto>
 
                 <ul className="resumen">
                     {productos.map( (producto, index) => (
-                            <FormCantidadProducto producto = {producto}></FormCantidadProducto>
+                            <FormCantidadProducto producto = {producto} 
+                            key={producto._id} 
+                            restarCantidad = {restarCantidad}
+                            aumentarCantidad = {aumentarCantidad}
+                            index = {index}
+                            ></FormCantidadProducto>
                         )    
                     )}
                     
                 </ul>
-                <div className="campo">
-                    <label>Total:</label>
-                    <input type="number" name="precio" placeholder="Precio" readOnly="readOnly" ></input>
-                </div>
+                    
+                <p className='total'> Total: {total}</p>
+
+                {total > 0 ? (
+                    <form
+                    
+                    >
+                        <input type="submit"
+                            className='btn btn-verde btn-block'
+                            value="Realizar pedido"/>
+                    </form>
+                ) : null}
+
                 <div className="enviar">
                     <input type="submit" className="btn btn-azul" value="Agregar Pedido"></input>
                 </div>

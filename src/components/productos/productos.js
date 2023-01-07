@@ -31,7 +31,7 @@ function Productos() {
 
     
     //Spinner de carga
-    if(!allProducts.length) return <Spinner></Spinner>
+    // if(!allProducts.length) return <Spinner></Spinner>
 
     return ( 
 

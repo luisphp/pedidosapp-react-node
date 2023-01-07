@@ -40,7 +40,7 @@ function NuevoProducto() {
         formData.append('price', producto.precio)
         formData.append('image', archivo)
         try {
-            const resp = await clienteAxios.put('/products', formData, {
+            const resp = await clienteAxios.post('/products', formData, {
                 headers: {
                     'Content-Type' : 'multipart/form-data'
                 }
