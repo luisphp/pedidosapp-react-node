@@ -74,6 +74,13 @@ import FormCantidadProducto from './FormCantidadProducto';
         guardarBusqueda(e.target.value)
     }
 
+    // Eliminar un producto del state
+    const eliminarProducto = id => {
+        let todosLosProductos = productos.filter(producto => producto.producto !== id) 
+        
+        actualizarTotal(todosLosProductos)
+    }
+
     const actualizarTotal = () => {
         if(productos.length === 0){
             guardarTotal(0)
@@ -123,6 +130,47 @@ import FormCantidadProducto from './FormCantidadProducto';
         // guardarTotal( todosProductos[index].cantidad * todosProductos[index].price)
     }
 
+    // Almacenar el pedido en la base dedatos
+    function renameKey ( obj, oldKey, newKey ) {
+        obj[newKey] = obj[oldKey];
+        delete obj[oldKey];
+      }
+    const realizarPedido = async e => {
+        // e.preventDefault()
+
+        // Extraer el Id
+        // const {id} = useParams();
+
+        // construir el objeto
+
+        // productos.map( item => renameKey( item, 'producto', 'Product' ))
+
+        const pedido = {
+            "Client": id,
+            "Order" : productos,
+            "Total" : total,
+            "Fecha" : String(new Date())
+        }
+
+        console.log('Pedido preview: ', pedido)
+
+        clienteAxios.post(`/pedidos`, pedido)
+        .then(result => {
+            Swal.fire({
+                type: 'success',
+                title: 'Se creo tu pedido',
+                text: result
+            })
+        })
+        .catch(e => {
+            Swal.fire({
+                type: 'error',
+                title: 'No se creo tu pedido',
+                text: e
+            })
+        })
+    }
+
     return (
         <div className="caja-contenido col-9">
             <h2>Nuevo Pedido</h2>
@@ -156,6 +204,7 @@ import FormCantidadProducto from './FormCantidadProducto';
                             restarCantidad = {restarCantidad}
                             aumentarCantidad = {aumentarCantidad}
                             index = {index}
+                            eliminarProducto = {eliminarProducto}
                             ></FormCantidadProducto>
                         )    
                     )}
@@ -168,15 +217,15 @@ import FormCantidadProducto from './FormCantidadProducto';
                     <form
                     
                     >
-                        <input type="submit"
+                        <input
                             className='btn btn-verde btn-block'
-                            value="Realizar pedido"/>
+                            value="Realizar pedido"  onClick={ () =>  realizarPedido()}/>
                     </form>
                 ) : null}
-
+{/* 
                 <div className="enviar">
-                    <input type="submit" className="btn btn-azul" value="Agregar Pedido"></input>
-                </div>
+                    <button className="btn btn-azul" value="Agregar Pedido"></button>
+                </div> */}
         </div>
     )
 }

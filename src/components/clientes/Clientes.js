@@ -1,8 +1,12 @@
-import React, {Fragment, useEffect, useState} from 'react';
+import React, {Fragment, useContext, useEffect, useState} from 'react';
 import clienteAxios from '../../config/axios';
 import Cliente from './Cliente';
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+
+// Importamos el context
+import {CRMContext} from '../../../src/context/CRMContext'
 
 
 function Clientes(){
@@ -11,18 +15,33 @@ function Clientes(){
     // clientes = state | guardarClientes = funcion para guardar clientes
     const [allClients, guardarClientes] = useState([]);
     const [refresh, setRefresh] = useState(true);
+    let navigate = useNavigate();
+
+    // Utilizamos los valores (el token de autneticado) del context
+    const [auth, guardarAuth] = useContext(CRMContext)
+
+    console.log(auth)
 
     //use effect es similar a component didmount y willmount
     const consultarAPI = async () => {
 
-        // console.log('Consultando...');
+        // Verificamos si existe un token en nuestro Context 
+        if(auth.token !== ''){
 
-        const clienteAxiosResult = await clienteAxios.get('/clients');
-        
-        // colocar el resultado de la consulta a la API en el state
-        guardarClientes(clienteAxiosResult.data.result)
+            // console.log('Consultando...');
+    
+            const clienteAxiosResult = await clienteAxios.get('/clients', {
+                headers:{Authorization: 'Bearer '+ auth.token}
+            });
+            
+            // colocar el resultado de la consulta a la API en el state
+            guardarClientes(clienteAxiosResult.data.result)
+    
+            console.log('Consultando result', clienteAxiosResult);
+        }else{
+            navigate('/login', {replace:true});
+        }
 
-        console.log('Consultando result', clienteAxiosResult);
     
     }
 

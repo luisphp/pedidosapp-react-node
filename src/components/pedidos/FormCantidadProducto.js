@@ -8,7 +8,7 @@ import React from 'react';
 // function FormCantidadProducto({producto}){
 function FormCantidadProducto(props){
 
-    const {producto, restarCantidad, aumentarCantidad, index} = props
+    const {producto, restarCantidad, aumentarCantidad, index, eliminarProducto} = props
 
     return(
         <li>
@@ -25,12 +25,12 @@ function FormCantidadProducto(props){
             <div className="acciones">
                 <div className="contenedor-cantidad">
                     <i className="fas fa-minus" onClick={ () => restarCantidad(index) }></i>
-                    <input type="text" name="cantidad" defaultValue="0"  value={producto.cantidad} />
+                    <p name="cantidad"    >{producto.cantidad}</p>
                     <i className="fas fa-plus" onClick={ () => aumentarCantidad(index) }></i>
                 </div>
-                <button type="button" className="btn btn-rojo">
-                    <i className="fas fa-minus-circle"></i>
-                        Eliminar Producto
+                <button type="button" className="btn btn-rojo" onClick={() => eliminarProducto(producto._id)}>
+                    <i className="fas fa-minus-circle" ></i>
+                        Eliminar Producto 
                 </button>
             </div>
         </li>
